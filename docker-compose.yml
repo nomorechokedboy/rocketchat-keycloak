@@ -7,66 +7,72 @@ services:
                         POSTGRES_DB: ${POSTGRESQL_DB}
                         POSTGRES_USER: ${POSTGRESQL_USER}
                         POSTGRES_PASSWORD: ${POSTGRESQL_PASS}
-
         keycloak:
                 depends_on:
                         - postgres
-                container_name: local_keycloak
                 environment:
                         DB_VENDOR: postgres
                         DB_ADDR: postgres
                         DB_DATABASE: ${POSTGRESQL_DB}
                         DB_USER: ${POSTGRESQL_USER}
                         DB_PASSWORD: ${POSTGRESQL_PASS}
+                        KEYCLOAK_ADMIN: admin
+                        KEYCLOAK_ADMIN_PASSWORD: admin
+                        KEYCLOAK_USER: admin
+                        KEYCLOAK_PASSWORD: admin
+                        PROXY_ADDRESS_FORWARDING: true
                 image: jboss/keycloak
                 ports:
                         - '8080:8080'
                 restart: unless-stopped
-
         rocketchat:
                 container_name: rocketchat
                 image: rocket.chat:latest
                 restart: unless-stopped
                 environment:
                         - PORT=3000
-                        - ROOT_URL=http://localhost
-                        - MONGO_URL=mongodb://mongo:27017/rocketchat
-                        - MONGO_OPLOG_URL=mongodb://mongo:27017/local
-                depends_on:
-                        - mongo
+                        - MONGO_URL=/url/to/mongodb
+                        - MONGO_OPLOG_URL=/url/to/mongodb/oplog
+                # depends_on:
+                #   - mongo
                 ports:
-                        - 3005:3000
-        mongo:
-                container_name: mongo
-                image: mongo:latest
-                restart: unless-stopped
-                volumes:
-                        - ./data/db:/data/db
-                command: mongod --oplogSize 128 --replSet rs0
-                labels:
-                        - 'traefik.enable=false'
-
+                        - 3000:3000
         # this container's job is just run the command to initialize the replica set.
         # it will run the command and remove himself (it will not stay running)
-        mongo-init-replica:
-                image: mongo:latest
-                command: >
-                        bash -c
-                          "for i in `seq 1 30`; do
-                              msg=$$(mongosh mongo/rocketchat --quiet --eval \"
-                              rs.initiate({
-                                _id: 'rs0',
-                                members: [ { _id: 0, host: 'mongo:27017' } ]})\" 2>&1)
-                              s=$$?
-                              if [ \"$$s\" -eq 0 ]; then
-                                break
-                              fi
-                              if [[ \"$$msg\" == \"MongoServerError: already initialized\" ]] ; then
-                                echo $$msg
-                                break
-                              fi
-                            echo \"Tried $$i times. Waiting 5 secs...\";
-                            sleep 5;
-                          done; (exit 0)"
-                depends_on:
-                        - mongo
+        # mongo-init-replica:
+        #   image: mongo:latest
+        #   command: >
+        #     bash -c
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #       "for i in `seq 1 30`; do
+        #           msg=$$(mongosh mongo/rocketchat --quiet --eval \"
+        #           rs.initiate({
+        #             _id: 'rs0',
+        #             members: [ { _id: 0, host: 'mongo:27017' } ]})\" 2>&1)
+        #           s=$$?
+        #           if [ \"$$s\" -eq 0 ]; then
+        #             break
+        #           fi
+        #           if [[ \"$$msg\" == \"MongoServerError: already initialized\" ]] ; then
+        #             echo $$msg
+        #             break
+        #           fi
+        #         echo \"Tried $$i times. Waiting 5 secs...\";
+        #         sleep 5;
+        #       done; (exit 0)"
+        #   depends_on:
+        #     - mongo
+        # mongo:
+        #   image: mongo:latest
+        #   restart: unless-stopped
+        #   volumes:
+        #     - ./data/db:/data/db
+        #   command: mongod --oplogSize 128 --replSet rs0
+        #   labels:
+        #     - "traefik.enable=false"
