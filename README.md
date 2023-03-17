@@ -2,6 +2,10 @@
 
 [![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/deploy?repository=https://github.com/nomorechokedboy/rocketchat-keycloak&branch=master)
 
+Me and my friend tried to integrate rocket chat with keycloak local with the [documentation](https://docs.rocket.chat/setup-and-configure/advanced-workspace-management/authentication/open-id-connect/keycloak) from rocket chat team. Unfortunately, the local run did not yield any result but error `handshake error`. However, we have figured out when we deploy these service to cloud environment, it works.
+
+Hence, I write this guide for whoever will face this error to know how to setup keycloak with rocket chat. And if you know why the local didn't work, please tell use.
+
 ## Prerequisite
 
 - You should have `docker` and `docker-compose` knowledge before using this
