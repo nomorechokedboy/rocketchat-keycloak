@@ -66,6 +66,7 @@ services:
 
 
 
+
         "for i in `seq 1 30`; do
             msg=$$(mongosh mongo/rocketchat --quiet --eval \"
             rs.initiate({
@@ -87,8 +88,6 @@ services:
   mongodb:
     image: mongo:latest
     restart: unless-stopped
-    volumes:
-      - ./data/db:/data/db
     command: mongod --oplogSize 128 --replSet rs0
     labels:
       - "traefik.enable=false"
