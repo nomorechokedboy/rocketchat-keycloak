@@ -46,8 +46,6 @@ services:
       bash -c
 
 
-
-
         "for i in `seq 1 30`; do
             msg=$$(mongosh mongo/rocketchat --quiet --eval \"
             rs.initiate({
@@ -63,12 +61,11 @@ services:
             fi
           echo \"Tried $$i times. Waiting 5 secs...\";
           sleep 5;
-        done; (exit 0)"
+        done; (exit 1)"
     depends_on:
       - mongo
   mongo:
+    container_name: mongo
     image: mongo:latest
     restart: unless-stopped
     command: mongod --oplogSize 128 --replSet rs0
-    labels:
-      - "traefik.enable=false"
