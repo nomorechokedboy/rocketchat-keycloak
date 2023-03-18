@@ -60,6 +60,7 @@ services:
 
 
 
+
         "for i in `seq 1 30`; do
             msg=$$(mongosh mongo/rocketchat --quiet --eval \"
             rs.initiate({
@@ -79,7 +80,7 @@ services:
     depends_on:
       - mongo
   mongo:
-    image: docker.io/mongo
+    image: mongo:latest
     restart: unless-stopped
     volumes:
       - ./data/db:/data/db
