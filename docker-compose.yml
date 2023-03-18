@@ -35,7 +35,7 @@ services:
       - MONGO_URL=mongodb://mongodb:27017/rocketchat
       - MONGO_OPLOG_URL=mongodb://mongodb:27017/local
     depends_on:
-      - mongo_db
+      - mongodb
     ports:
       - 3000:3000
   # this container's job is just run the command to initialize the replica set.
@@ -44,6 +44,8 @@ services:
     image: mongo:latest
     command: >
       bash -c
+
+
 
 
 
